@@ -11,7 +11,7 @@ public class ReflectBall
         float posPoint = transform.position.x;
         float posPaddle = collision.collider.bounds.center.x;
         float hitFactor = (posPoint - posPaddle) / (collision.collider.bounds.size.x / 2f);
-        float normalPaddle = collision.contacts[0].normal.y;//1f;
+        float normalPaddle = collision.GetContact(0).normal.y;
         return new Vector2(hitFactor, normalPaddle).normalized;
     }
     public Vector2 GetDirectionFromBrick(Collision2D collision, Vector2 inVector)
@@ -25,12 +25,12 @@ public class ReflectBall
 
         if (Mathf.Abs(direction.x / extents.x) > Mathf.Abs(direction.y / extents.y))
         {
-            normal = direction.x > 0 ? Vector2.right : Vector2.left;
+        normal = direction.x > 0 ? Vector2.right : Vector2.left;
         }
         else
         {
             normal = direction.y > 0 ? Vector2.up : Vector2.down;
-        }
+        }  
         return Vector2.Reflect(inVector, normal);
     }
     public Vector2 FixedReflect(Vector2 direction, float minX)

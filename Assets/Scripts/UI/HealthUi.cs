@@ -4,17 +4,18 @@ using UnityEngine;
 
 public class UiHealth : MonoBehaviour
 {
-    [SerializeField] private float m_countLives;
+
+    [SerializeField] private DataHealth m_data;
     [SerializeField] private TextMeshProUGUI m_uiHealth;
-    [SerializeField] private ScriptableLivesEvent m_eventBall;
+    [SerializeField] private ScriptableSingleEvent m_eventsBall;
+    [SerializeField] private ScriptableSingleEvent m_endLives;
     [SerializeField] private ScriptableSingleEvent m_eventTakeHealth;
+    private float m_countLives;
     void OnEnable()
     {
-        m_eventBall.BallOffSide += DecreseLives;
+        m_eventsBall.Event += DecreseLives;
         m_eventTakeHealth.Event += IncreaseLives;
-    }
-    void Start()
-    {
+        m_countLives = m_data.CountLive;
         UpdateText();
     }
     public void DecreseLives()
@@ -22,7 +23,7 @@ public class UiHealth : MonoBehaviour
         m_countLives -= 1;
         if (m_countLives <= 0)
         {
-            m_eventBall.InvokeEventEndLives();
+            m_endLives.InvokeEvent();
         }
         UpdateText();
     }
@@ -37,7 +38,7 @@ public class UiHealth : MonoBehaviour
     }
     void OnDisable()
     {
-        m_eventBall.BallOffSide -= DecreseLives;
+        m_eventsBall.Event -= DecreseLives;
         m_eventTakeHealth.Event -= IncreaseLives;
     }
 }

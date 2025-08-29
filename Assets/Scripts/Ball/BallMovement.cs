@@ -8,34 +8,34 @@ public class BallMovement : MonoBehaviour
     [SerializeField] private float m_startSpeed;
     [SerializeField] private float m_maxSpeed;
     [SerializeField] private float m_MultypleSpeed;
-    [SerializeField] private ScriptableLivesEvent m_globalEvent;
+    [SerializeField] private ScriptableSingleEvent m_ballOffside;
+    [SerializeField] private ScriptableSingleEvent m_endBricksOnLevel;
     [SerializeField] private ScriptableSingleEventFloat m_takeSlowPowerUp;
     private Vector2 m_velocity;
     private Vector2 m_direction;
+    private bool m_isTouch = false;
     private Rigidbody2D m_rigidBody;
     private Transform m_transform;
     private ReflectBall m_reflect;
+    private LimitSpeed m_limitSpeed;
     void Awake()
     {
         m_rigidBody = GetComponent<Rigidbody2D>();
         m_transform = GetComponent<Transform>();
         m_reflect = new ReflectBall();
+        m_limitSpeed = new LimitSpeed();
     }
     void OnEnable()
     {
-        m_globalEvent.EndLives += OverGame;
-        m_globalEvent.EndBricks += SettupBall;
-        m_takeSlowPowerUp.Event += TakeSlowUp;
-    }
-    void Start()
-    {
+        m_endBricksOnLevel.Event += SettupBall;
+        m_takeSlowPowerUp.Event += TakeSlowPowerUp;
         SettupBall();
     }
     void Update()
     {
         if (m_transform.position.y <= -10f)
         {
-            m_globalEvent.InvokeEventBallOffside();
+            m_ballOffside.InvokeEvent();
             SettupBall();
         }
         Debug.Log(m_direction);
@@ -47,9 +47,8 @@ public class BallMovement : MonoBehaviour
     }
     void OnDisable()
     {
-        m_globalEvent.EndLives -= OverGame;
-        m_globalEvent.EndBricks -= SettupBall;
-        m_takeSlowPowerUp.Event -= TakeSlowUp;
+        m_endBricksOnLevel.Event -= SettupBall;
+        m_takeSlowPowerUp.Event -= TakeSlowPowerUp;
     }
     private void MoveBall(Vector2 velocity)
     {
@@ -60,47 +59,33 @@ public class BallMovement : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Brick"))
         {
-            m_direction = m_reflect.GetDirectionFromBrick(collision, m_direction);
-            m_direction = m_reflect.FixedReflect(m_direction, 0.2f);
-            m_velocity = m_direction * m_velocity.magnitude;
+            if (!m_isTouch)
+            {
+                m_direction = m_reflect.GetDirectionFromBrick(collision, m_direction);
+                m_velocity = m_direction * m_velocity.magnitude;
+            }
+            m_isTouch = true;
             collision.gameObject.GetComponent<IHitBricks>().MinusLive(1);
         }
         else if (collision.gameObject.CompareTag("Paddle"))
         {
             m_direction = m_reflect.GetDirectionFromPaddle(collision, m_transform);
-            m_direction = m_reflect.FixedReflect(m_direction, 0.2f);
             m_velocity = m_direction * (m_velocity.magnitude * m_MultypleSpeed);
-            m_velocity = LimitVelocity(m_velocity, m_maxSpeed);
+            m_velocity = m_limitSpeed.LimitVelocity(m_velocity, m_maxSpeed);
         }
         else
         {
-            m_direction = m_reflect.GetDirectionReflect(m_direction, -collision.collider.transform.right);
-            m_direction = m_reflect.FixedReflect(m_direction, 0.2f);
+            m_direction = m_reflect.GetDirectionReflect(m_direction, collision.GetContact(0).normal);
             m_velocity = m_direction * m_velocity.magnitude;
         }
     }
-    void OnCollisionStay2D(Collision2D collision)
+    void OnCollisionExit2D(Collision2D collision)
     {
-        float time = 0.1f;
-        if (collision.gameObject.CompareTag("Wall"))
+        if (collision.gameObject.CompareTag("Brick"))
         {
-            time -= Time.deltaTime;
-            if (time < 0)
-            {
-                m_direction.x = m_direction.x * -1;
-            
-            }
+          m_isTouch = false;  
         }
     }
-    private Vector2 LimitVelocity(Vector2 currentVelocity, float maxSpeed)
-    {
-        if (currentVelocity.magnitude >= maxSpeed)
-        {
-            return currentVelocity.normalized * maxSpeed;
-        }
-        return currentVelocity;
-    }
-
     private void StartBall(Vector2 direction)
     {
         BallLaunch.Instant.StartBallAction -= StartBall;
@@ -115,11 +100,8 @@ public class BallMovement : MonoBehaviour
         BallLaunch.Instant.StartBallAction += StartBall;
         BallLaunch.Instant.SettupBall(transform);
     }
-    private void OverGame()
-    {
-        gameObject.SetActive(false);
-    }
-    private void TakeSlowUp(float parametr, float delay)
+
+    private void TakeSlowPowerUp(float parametr, float delay)
     {
         StartCoroutine(SlowUp(parametr, delay));
     }

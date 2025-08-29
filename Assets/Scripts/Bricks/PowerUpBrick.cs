@@ -1,7 +1,7 @@
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class PowerUpBrick : IHitBrick
+public class PowerUpBrick : Brick
 {
     [SerializeField] private GameObject m_powerUpPrefab;
     public override void MinusLive(int power)
@@ -9,13 +9,13 @@ public class PowerUpBrick : IHitBrick
         m_countHits -= power;
         if (m_countHits <= 0)
         {
-            Destroy(gameObject);
+            DestroyObject();
         }
     }
-    private void OnDestroy()
+    public override void DestroyObject()
     {
-        Instantiate(m_powerUpPrefab,transform.position, Quaternion.identity);
-        m_counter.UpdateCount();
-        SingletonScore.Instant.UpdateScore(m_data.Score);
+        GameObject powerup = Instantiate(m_powerUpPrefab, transform.position, Quaternion.identity);
+        powerup.transform.SetParent(m_counter.transform);
+        base.DestroyObject();
     }
 }

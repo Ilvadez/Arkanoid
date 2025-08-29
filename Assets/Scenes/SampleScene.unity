@@ -663,9 +663,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75874117af61fc646b191d768466e7f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_countLives: 3
+  m_data: {fileID: 11400000, guid: 5563a7c8942947747bc4b994d02c9da1, type: 2}
   m_uiHealth: {fileID: 325054120}
-  m_eventBall: {fileID: 11400000, guid: 37c53f65f667ed244b8c365b2cde80fa, type: 2}
+  m_eventsBall: {fileID: 11400000, guid: 90696db3c9705f341b2f3a1648523c5c, type: 2}
+  m_endLives: {fileID: 11400000, guid: e1ec03c14582cb849b563715e7d5eb68, type: 2}
   m_eventTakeHealth: {fileID: 11400000, guid: 634d63e030e2c0b4e8bba621623933a8, type: 2}
 --- !u!114 &325054120
 MonoBehaviour:
@@ -797,9 +798,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_listLevels:
   - {fileID: 7273896833053643801, guid: 56ac3da00e9828f4ea49cfc3e123d786, type: 3}
+  - {fileID: 7273896833053643801, guid: 8f7c0cabbecf9a54dbf8abbb7ef413c4, type: 3}
   m_textCountBricks: {fileID: 166261635}
   m_textCurrentLevel: {fileID: 1365209489}
-  m_events: {fileID: 11400000, guid: 37c53f65f667ed244b8c365b2cde80fa, type: 2}
+  m_endLives: {fileID: 11400000, guid: e1ec03c14582cb849b563715e7d5eb68, type: 2}
+  m_endBricks: {fileID: 11400000, guid: ca5d7f8ea1dec10448e1af65d68a71b2, type: 2}
   m_endLevels: {fileID: 11400000, guid: 98b93cef356e2f74a92b46bdd2e6ee3b, type: 2}
 --- !u!4 &356401954
 Transform:
@@ -859,7 +862,7 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
@@ -873,7 +876,7 @@ CircleCollider2D:
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: cf3ee16f3fc09a04795f88c1124cb636, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -984,7 +987,8 @@ MonoBehaviour:
   m_startSpeed: 7
   m_maxSpeed: 11
   m_MultypleSpeed: 1.02
-  m_globalEvent: {fileID: 11400000, guid: 37c53f65f667ed244b8c365b2cde80fa, type: 2}
+  m_ballOffside: {fileID: 11400000, guid: 90696db3c9705f341b2f3a1648523c5c, type: 2}
+  m_endBricksOnLevel: {fileID: 11400000, guid: ca5d7f8ea1dec10448e1af65d68a71b2, type: 2}
   m_takeSlowPowerUp: {fileID: 11400000, guid: 65000b80a4b224f4d978ae47262b10ab, type: 2}
 --- !u!1 &519420028
 GameObject:
@@ -1180,6 +1184,7 @@ MonoBehaviour:
   - {fileID: 1682495192}
   - {fileID: 1216883008}
   m_restartMenu: {fileID: 11400000, guid: 98b93cef356e2f74a92b46bdd2e6ee3b, type: 2}
+  m_endLives: {fileID: 11400000, guid: e1ec03c14582cb849b563715e7d5eb68, type: 2}
 --- !u!114 &532472153
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1711,7 +1716,7 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 6
@@ -1797,7 +1802,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 094edf70edd3f354c8afbac1fe2b4444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_eventLives: {fileID: 11400000, guid: 37c53f65f667ed244b8c365b2cde80fa, type: 2}
+  m_endLives: {fileID: 11400000, guid: e1ec03c14582cb849b563715e7d5eb68, type: 2}
 --- !u!70 &1172404911
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -3082,6 +3087,7 @@ GameObject:
   - component: {fileID: 1682495193}
   - component: {fileID: 1682495195}
   - component: {fileID: 1682495194}
+  - component: {fileID: 1682495196}
   m_Layer: 5
   m_Name: UIInGame
   m_TagString: Untagged
@@ -3151,6 +3157,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1682495192}
   m_CullTransparentMesh: 1
+--- !u!114 &1682495196
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1682495192}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb78e5ea1fc5e344f8c26cd082b14284, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_endLives: {fileID: 11400000, guid: e1ec03c14582cb849b563715e7d5eb68, type: 2}
+  m_textScore: {fileID: 1874870497}
+  m_bestTextScore: {fileID: 2114588452}
 --- !u!1 &1820824676
 GameObject:
   m_ObjectHideFlags: 0
@@ -3163,7 +3184,6 @@ GameObject:
   - component: {fileID: 1820824679}
   - component: {fileID: 1820824678}
   - component: {fileID: 1820824677}
-  - component: {fileID: 1820824681}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -3255,21 +3275,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!114 &1820824681
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1820824676}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cb78e5ea1fc5e344f8c26cd082b14284, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_events: {fileID: 11400000, guid: 37c53f65f667ed244b8c365b2cde80fa, type: 2}
-  m_textScore: {fileID: 1874870497}
-  m_bestTextScore: {fileID: 2114588452}
 --- !u!1 &1874870495
 GameObject:
   m_ObjectHideFlags: 0

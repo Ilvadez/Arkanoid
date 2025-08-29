@@ -5,7 +5,7 @@ using UnityEngine;
 public class SingletonScore : MonoBehaviour
 {
     public static SingletonScore Instant { get; private set; }
-    [SerializeField] private ScriptableLivesEvent m_events;
+    [SerializeField] private ScriptableSingleEvent m_endLives;
     [SerializeField] private TextMeshProUGUI m_textScore;
     [SerializeField] private TextMeshProUGUI m_bestTextScore;
     private int m_score;
@@ -24,15 +24,17 @@ public class SingletonScore : MonoBehaviour
     }
     void OnEnable()
     {
-        m_events.EndLives += SaveScore;
+        m_score = 0;
+        UpdateText();
+        m_endLives.Event += SaveScore;
     }
     void OnDisable()
     {
-        m_events.EndLives -= SaveScore;
+        m_endLives.Event -= SaveScore;
+
     }
     void Start()
     {
-        UpdateText();
         int bestScore = m_save.GetScore("Best_Score");
         m_bestTextScore.text = $"{bestScore}";
     }

@@ -7,7 +7,8 @@ public class SpawnerLevels : MonoBehaviour
     [SerializeField] private List<GameObject> m_listLevels = new List<GameObject>(12);
     [SerializeField] private TextMeshProUGUI m_textCountBricks;
     [SerializeField] private TextMeshProUGUI m_textCurrentLevel;
-    [SerializeField] private ScriptableLivesEvent m_events;
+    [SerializeField] private ScriptableSingleEvent m_endLives;
+    [SerializeField] private ScriptableSingleEvent m_endBricks;
     [SerializeField] private ScriptableSingleEvent m_endLevels;
     private int m_currentIndex;
     private BrickCounter m_counter;
@@ -15,15 +16,24 @@ public class SpawnerLevels : MonoBehaviour
     void Awake()
     {
         m_currentIndex = 0;
+    }
+    void OnEnable()
+    {
+        m_endLives.Event += DestroyObject;
         SetCountBricks(m_currentIndex);
         UpdateTextLevel();
     }
+    void OnDisable()
+    {
 
+        m_endLives.Event -= DestroyObject;
+    }
     void NextLevel()
     {
         m_counter.EndBricks -= NextLevel;
         m_counter = null;
-        m_events.InvokeEventEndBricks();
+
+        m_endBricks.InvokeEvent();
         if (m_currentIndex + 1 < m_listLevels.Count)
         {
             m_currentIndex++;
@@ -50,5 +60,10 @@ public class SpawnerLevels : MonoBehaviour
     private void UpdateTextLevel()
     {
         m_textCurrentLevel.text = $"{m_currentIndex + 1}";
-    } 
+    }
+    private void DestroyObject()
+    {
+        Destroy(m_currentLevel);
+        m_currentIndex = 0;
+    }
 }

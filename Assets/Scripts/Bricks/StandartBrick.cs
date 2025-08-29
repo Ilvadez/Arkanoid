@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class StandartBrick : IHitBrick
+public class StandartBrick : Brick
 {
     public override void MinusLive(int power)
     {
@@ -9,10 +9,5 @@ public class StandartBrick : IHitBrick
         {
             DestroyObject();
         }
-    }
-    private void OnDestroy()
-    {
-        m_counter.UpdateCount();
-        SingletonScore.Instant.UpdateScore(m_data.Score);
     }
 }

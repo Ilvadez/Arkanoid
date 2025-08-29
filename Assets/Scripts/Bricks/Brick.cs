@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public abstract class IHitBrick : MonoBehaviour, IBrick , IHitBricks
+public abstract class Brick : MonoBehaviour, IBrick , IHitBricks
 {
     [SerializeField] protected int m_countHits;
     [SerializeField] protected int m_score;
@@ -20,6 +20,8 @@ public abstract class IHitBrick : MonoBehaviour, IBrick , IHitBricks
 
     public virtual void DestroyObject()
     {
+        m_counter.UpdateCount();
+        SingletonScore.Instant.UpdateScore(m_data.Score);
         Destroy(gameObject);
     }
 }

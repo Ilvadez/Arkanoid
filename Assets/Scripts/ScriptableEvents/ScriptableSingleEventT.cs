@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Events;
 
 [CreateAssetMenu(menuName = "Event/SingleT")]
-public class ScriptableSingleEventFloat : ScriptableObject
+public class EventForSpeedWithTime : ScriptableObject
 {
     public event Action<float, float> Event;
 

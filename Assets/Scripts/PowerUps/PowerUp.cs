@@ -2,11 +2,12 @@ using UnityEngine;
 
 public abstract class PowerUp : MonoBehaviour
 {
-    [SerializeField] protected float m_speed;
-    protected Rigidbody2D m_rb;
+    protected Rigidbody2D m_rigidbody2d;
+    [SerializeField]
+    protected float m_speed;
     void Awake()
     {
-        m_rb = GetComponent<Rigidbody2D>();
+        m_rigidbody2d = GetComponent<Rigidbody2D>();
     }
     void Update()
     {
@@ -15,7 +16,7 @@ public abstract class PowerUp : MonoBehaviour
     protected virtual void MoveDown()
     {
         Vector2 velocity = Vector2.down * m_speed;
-        m_rb.MovePosition(m_rb.position + velocity * Time.fixedDeltaTime);
+        m_rigidbody2d.MovePosition(m_rigidbody2d.position + velocity * Time.fixedDeltaTime);
     }
     public abstract void TakePowerUp(TakePowerUps taker);
 }

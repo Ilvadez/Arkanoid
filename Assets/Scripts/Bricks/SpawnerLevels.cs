@@ -4,36 +4,43 @@ using UnityEngine;
 
 public class SpawnerLevels : MonoBehaviour
 {
-    [SerializeField] private List<GameObject> m_listLevels = new List<GameObject>(12);
-    [SerializeField] private TextMeshProUGUI m_textCountBricks;
-    [SerializeField] private TextMeshProUGUI m_textCurrentLevel;
-    [SerializeField] private ScriptableSingleEvent m_endLives;
-    [SerializeField] private ScriptableSingleEvent m_endBricks;
-    [SerializeField] private ScriptableSingleEvent m_endLevels;
-    private int m_currentIndex;
+    [SerializeField]
+    private EventWithoutParametr m_endedLives;
+    [SerializeField]
+    private EventWithoutParametr m_endedBricks;
+    [SerializeField]
+    private EventWithoutParametr m_endedLevels;
     private BrickCounter m_counter;
+    [SerializeField]
+    private TextMeshProUGUI m_textCountBricks;
+    [SerializeField]
+    private TextMeshProUGUI m_textCurrentLevel;
+    [SerializeField]
+    private List<GameObject> m_listLevels = new List<GameObject>(12);
     private GameObject m_currentLevel;
+    private const int m_startIndex = 0;
+    private int m_currentIndex;
     void Awake()
     {
-        m_currentIndex = 0;
+        m_currentIndex = m_startIndex;
     }
     void OnEnable()
     {
-        m_endLives.Event += DestroyObject;
+        m_endedLives.Event += DestroyObject;
         SetCountBricks(m_currentIndex);
         UpdateTextLevel();
     }
     void OnDisable()
     {
 
-        m_endLives.Event -= DestroyObject;
+        m_endedLives.Event -= DestroyObject;
     }
     void NextLevel()
     {
-        m_counter.EndBricks -= NextLevel;
+        m_counter.EndedBricks -= NextLevel;
         m_counter = null;
 
-        m_endBricks.InvokeEvent();
+        m_endedBricks.InvokeEvent();
         if (m_currentIndex + 1 < m_listLevels.Count)
         {
             m_currentIndex++;
@@ -42,7 +49,7 @@ public class SpawnerLevels : MonoBehaviour
         }
         else if (m_currentIndex + 1 >= m_listLevels.Count)
         {
-            m_endLevels.InvokeEvent();
+            m_endedLevels.InvokeEvent();
         }
     }
 
@@ -55,7 +62,7 @@ public class SpawnerLevels : MonoBehaviour
         m_currentLevel = Instantiate(m_listLevels[indexLevel], transform.position, Quaternion.identity);
         m_counter = m_currentLevel.GetComponent<BrickCounter>();
         m_counter.InitCountBricks(m_textCountBricks);
-        m_counter.EndBricks += NextLevel;
+        m_counter.EndedBricks += NextLevel;
     }
     private void UpdateTextLevel()
     {
@@ -64,6 +71,6 @@ public class SpawnerLevels : MonoBehaviour
     private void DestroyObject()
     {
         Destroy(m_currentLevel);
-        m_currentIndex = 0;
+        m_currentIndex = m_startIndex;
     }
 }

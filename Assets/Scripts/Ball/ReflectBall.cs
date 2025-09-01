@@ -33,12 +33,4 @@ public class ReflectBall
         }  
         return Vector2.Reflect(inVector, normal);
     }
-    public Vector2 FixedReflect(Vector2 direction, float minX)
-    {
-        if (Mathf.Abs(direction.x) < minX)
-        {
-            direction.x = Mathf.Sign(direction.x) == 0 ? minX : Mathf.Sign(direction.x) * minX;
-        }
-        return direction.normalized;
-    }
 }

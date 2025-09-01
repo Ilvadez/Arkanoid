@@ -1,27 +1,33 @@
 using UnityEngine;
 
-public abstract class Brick : MonoBehaviour, IBrick , IHitBricks
+public abstract class Brick : MonoBehaviour, IInitializeBrick , IHitBrick
 {
-    [SerializeField] protected int m_countHits;
-    [SerializeField] protected int m_score;
-    [SerializeField] protected DataBrick m_data;
-    
-    protected BrickCounter m_counter;
-
+    [SerializeField]
+    protected DataBrick m_dataBrick;
+    protected BrickCounter m_counterBricks;
+    protected const int m_numberOfDestroy = 0;
+    protected int m_countHits;
     void Awake()
     {
-        m_countHits = m_data.CountHits;
+        m_countHits = m_dataBrick.CountHits;
     }
-    public void Init(BrickCounter counter)
+    public void Initialization(BrickCounter counter)
     {
-        m_counter = counter;
+        m_counterBricks = counter;
     }
-    public abstract void MinusLive(int power);
+    public virtual void MinusLive(int power)
+    {
+        m_countHits -= power;
+        if (m_countHits <= m_numberOfDestroy)
+        {
+            DestroyObject();
+        }
+    }
 
     public virtual void DestroyObject()
     {
-        m_counter.UpdateCount();
-        SingletonScore.Instant.UpdateScore(m_data.Score);
+        m_counterBricks.UpdateCount();
+        SingletonScore.Instant.UpdateScore(m_dataBrick.Score);
         Destroy(gameObject);
     }
 }

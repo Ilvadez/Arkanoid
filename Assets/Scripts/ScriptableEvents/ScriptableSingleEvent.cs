@@ -3,7 +3,7 @@ using UnityEditor.PackageManager;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Event/Single")]
-public class ScriptableSingleEvent : ScriptableObject
+public class EventWithoutParametr : ScriptableObject
 {
     public event Action Event;
 

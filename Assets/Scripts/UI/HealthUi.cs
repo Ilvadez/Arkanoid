@@ -5,11 +5,18 @@ using UnityEngine;
 public class UiHealth : MonoBehaviour
 {
 
-    [SerializeField] private DataHealth m_data;
-    [SerializeField] private TextMeshProUGUI m_uiHealth;
-    [SerializeField] private ScriptableSingleEvent m_eventsBall;
-    [SerializeField] private ScriptableSingleEvent m_endLives;
-    [SerializeField] private ScriptableSingleEvent m_eventTakeHealth;
+    [SerializeField]
+    private DataHealth m_data;
+    [SerializeField]
+    private TextMeshProUGUI m_uiHealth;
+    [SerializeField]
+    private EventWithoutParametr m_eventsBall;
+    [SerializeField]
+    private EventWithoutParametr m_endLives;
+    [SerializeField]
+    private EventWithoutParametr m_eventTakeHealth;
+    private const int m_numberGameOver = 0;
+    private const int m_numberChangeLive = 1;
     private float m_countLives;
     void OnEnable()
     {
@@ -18,10 +25,15 @@ public class UiHealth : MonoBehaviour
         m_countLives = m_data.CountLive;
         UpdateText();
     }
+        void OnDisable()
+    {
+        m_eventsBall.Event -= DecreseLives;
+        m_eventTakeHealth.Event -= IncreaseLives;
+    }
     public void DecreseLives()
     {
-        m_countLives -= 1;
-        if (m_countLives <= 0)
+        m_countLives -= m_numberChangeLive;
+        if (m_countLives <= m_numberGameOver)
         {
             m_endLives.InvokeEvent();
         }
@@ -29,16 +41,11 @@ public class UiHealth : MonoBehaviour
     }
     void IncreaseLives()
     {
-        m_countLives += 1;
+        m_countLives += m_numberChangeLive;
         UpdateText();
     }
     void UpdateText()
     {
         m_uiHealth.text = $"{m_countLives}";
-    }
-    void OnDisable()
-    {
-        m_eventsBall.Event -= DecreseLives;
-        m_eventTakeHealth.Event -= IncreaseLives;
     }
 }

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public interface IHitBricks
+public interface IHitBrick
 {
     public void MinusLive(int power);
 

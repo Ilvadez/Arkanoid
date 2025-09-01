@@ -3,11 +3,14 @@ using UnityEngine;
 
 public class BallLaunch : MonoBehaviour
 {
+    public event Action<Vector2> StartedBallAction;
     public static BallLaunch Instant { get; private set; }
-    [SerializeField] private Vector2 m_startVectorForBall;
-    [SerializeField]private InputController m_input;
+    [SerializeField]
+    private InputController m_input;
     private Transform m_positionSpawnBall;
-    public event Action<Vector2> StartBallAction;
+    private readonly Vector3 m_positionBall = new Vector3(0.15f, 0.25f);
+    [SerializeField]
+    private Vector2 m_startVectorForBall;
     private bool m_isStarted = false;
     void Awake()
     {
@@ -31,10 +34,7 @@ public class BallLaunch : MonoBehaviour
     }
     void Update()
     {
-        if (m_isStarted)
-        {
-            transform.position = m_input.gameObject.transform.position + new Vector3(0.15f,0.25f);
-        }
+        MovePosition();
     }
     void OnDisable()
     {
@@ -42,7 +42,7 @@ public class BallLaunch : MonoBehaviour
     }
     private void StartBall()
     {
-        StartBallAction?.Invoke(m_startVectorForBall);
+        StartedBallAction?.Invoke(m_startVectorForBall);
         m_isStarted = false;
     }
     public void SettupBall(Transform settupTransform)
@@ -50,5 +50,13 @@ public class BallLaunch : MonoBehaviour
         m_isStarted = true;
         settupTransform.position = m_positionSpawnBall.position;
         settupTransform.SetParent(m_positionSpawnBall);
+    }
+
+    private void MovePosition()
+    {
+        if (m_isStarted)
+        {
+            transform.position = m_input.gameObject.transform.position + m_positionBall;
+        }
     }
 }

@@ -9,6 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0e64273410bf2ae409a54823c1ed708f, type: 3}
-  m_Name: LivesEvent
+  m_Script: {fileID: 11500000, guid: 4de08e35efef8634da4c53d3fb9716f4, type: 3}
+  m_Name: RestartBall
   m_EditorClassIdentifier: 

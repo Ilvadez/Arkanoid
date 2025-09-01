@@ -4,9 +4,12 @@ using UnityEngine;
 
 public class MainMenu : MonoBehaviour
 {
-    [SerializeField] private List<GameObject> m_objects = new List<GameObject>();
-    [SerializeField] private ScriptableSingleEvent m_restartMenu;
-    [SerializeField] private ScriptableSingleEvent m_endLives;
+    [SerializeField]
+    private List<GameObject> m_objects = new List<GameObject>();
+    [SerializeField]
+    private EventWithoutParametr m_restartMenu;
+    [SerializeField]
+    private EventWithoutParametr m_endLives;
     void Awake()
     {
         m_restartMenu.Event += RestartMenu;

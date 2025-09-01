@@ -147,7 +147,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e2d0c37ab7832148b5617bbde00ddc6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_dataBrick: {fileID: 11400000, guid: f455d5ce10ba2b84fb26b7fa377879d8, type: 2}
   m_countHits: 0
   m_score: 200
-  m_data: {fileID: 11400000, guid: f455d5ce10ba2b84fb26b7fa377879d8, type: 2}
   m_powerUpPrefab: {fileID: 9081853809120234024, guid: b814fa252f417464f8a3fa21017c68dd, type: 3}

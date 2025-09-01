@@ -3,11 +3,12 @@ using UnityEngine.InputSystem;
 
 public class PaddleMovement : MonoBehaviour
 {
-    [SerializeField] private float m_speed;
-
-    private Vector2 m_movementInput;
     private Rigidbody2D m_rigidbody;
     private InputController m_input;
+    private const float m_yPosition = 0f;
+    [SerializeField]
+    private float m_speed;
+    private Vector2 m_movementInput;
 
     void Awake()
     {
@@ -21,12 +22,12 @@ public class PaddleMovement : MonoBehaviour
     }
     void FixedUpdate()
     {
-        MoveObject(m_movementInput);
+        MovePosition(m_movementInput);
     }
-    private void MoveObject(Vector2 input)
+    private void MovePosition(Vector2 input)
     {
         float velocity = input.x * m_speed;
-        m_rigidbody.MovePosition(m_rigidbody.position + new Vector2(velocity, 0f) * Time.fixedDeltaTime);
+        m_rigidbody.MovePosition(m_rigidbody.position + new Vector2(velocity, m_yPosition) * Time.fixedDeltaTime);
     }
 
 }

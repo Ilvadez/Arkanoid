@@ -5,19 +5,28 @@ using UnityEngine.Rendering;
 
 public class BallMovement : MonoBehaviour
 {
-    [SerializeField] private float m_startSpeed;
-    [SerializeField] private float m_maxSpeed;
-    [SerializeField] private float m_MultypleSpeed;
-    [SerializeField] private ScriptableSingleEvent m_ballOffside;
-    [SerializeField] private ScriptableSingleEvent m_endBricksOnLevel;
-    [SerializeField] private ScriptableSingleEventFloat m_takeSlowPowerUp;
+    [SerializeField]
+    private EventWithoutParametr m_wentFromScene;
+    [SerializeField]
+    private EventWithoutParametr m_endedBricksOnLevel;
+    [SerializeField]
+    private EventForSpeedWithTime m_tookSlowPowerUp;
+    private ReflectBall m_reflect;
+    private LimitSpeed m_limitSpeed;
+    private Rigidbody2D m_rigidBody;
+    private Transform m_transform;
+    private Coroutine m_slowCoroutine;
+    private const int m_powerHit = 1;
+    private const float m_restartPosition = -10f;
+    [SerializeField]
+    private float m_startSpeed;
+    [SerializeField]
+    private float m_maxSpeed;
+    [SerializeField]
+    private float m_multipleSpeed;
     private Vector2 m_velocity;
     private Vector2 m_direction;
     private bool m_isTouch = false;
-    private Rigidbody2D m_rigidBody;
-    private Transform m_transform;
-    private ReflectBall m_reflect;
-    private LimitSpeed m_limitSpeed;
     void Awake()
     {
         m_rigidBody = GetComponent<Rigidbody2D>();
@@ -27,68 +36,50 @@ public class BallMovement : MonoBehaviour
     }
     void OnEnable()
     {
-        m_endBricksOnLevel.Event += SettupBall;
-        m_takeSlowPowerUp.Event += TakeSlowPowerUp;
+        m_endedBricksOnLevel.Event += SettupBall;
+        m_tookSlowPowerUp.Event += TakeSlowPowerUp;
         SettupBall();
     }
     void Update()
     {
-        if (m_transform.position.y <= -10f)
-        {
-            m_ballOffside.InvokeEvent();
-            SettupBall();
-        }
-        Debug.Log(m_direction);
-        Debug.Log(m_maxSpeed);
+        RestartBall();
     }
     void FixedUpdate()
     {
-        MoveBall(m_velocity);
+        MovePosition(m_velocity);
     }
     void OnDisable()
     {
-        m_endBricksOnLevel.Event -= SettupBall;
-        m_takeSlowPowerUp.Event -= TakeSlowPowerUp;
+        m_endedBricksOnLevel.Event -= SettupBall;
+        m_tookSlowPowerUp.Event -= TakeSlowPowerUp;
     }
-    private void MoveBall(Vector2 velocity)
+    private void MovePosition(Vector2 velocity)
     {
         m_rigidBody.MovePosition(new Vector2(m_transform.position.x, m_transform.position.y) + velocity * Time.fixedDeltaTime);
     }
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Brick"))
-        {
-            if (!m_isTouch)
-            {
-                m_direction = m_reflect.GetDirectionFromBrick(collision, m_direction);
-                m_velocity = m_direction * m_velocity.magnitude;
-            }
-            m_isTouch = true;
-            collision.gameObject.GetComponent<IHitBricks>().MinusLive(1);
-        }
-        else if (collision.gameObject.CompareTag("Paddle"))
-        {
-            m_direction = m_reflect.GetDirectionFromPaddle(collision, m_transform);
-            m_velocity = m_direction * (m_velocity.magnitude * m_MultypleSpeed);
-            m_velocity = m_limitSpeed.LimitVelocity(m_velocity, m_maxSpeed);
-        }
-        else
-        {
-            m_direction = m_reflect.GetDirectionReflect(m_direction, collision.GetContact(0).normal);
-            m_velocity = m_direction * m_velocity.magnitude;
-        }
+        ContactWithEnviroment(collision);
     }
     void OnCollisionExit2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Brick"))
         {
-          m_isTouch = false;  
+            m_isTouch = false;
+        }
+    }
+    private void RestartBall()
+    {
+        if (m_transform.position.y <= m_restartPosition)
+        {
+            m_wentFromScene.InvokeEvent();
+            SettupBall();
         }
     }
     private void StartBall(Vector2 direction)
     {
-        BallLaunch.Instant.StartBallAction -= StartBall;
+        BallLaunch.Instant.StartedBallAction -= StartBall;
         m_rigidBody.simulated = true;
         m_direction = direction.normalized;
         m_velocity = m_direction * m_startSpeed;
@@ -97,13 +88,44 @@ public class BallMovement : MonoBehaviour
     {
         m_velocity = Vector2.zero;
         m_rigidBody.simulated = false;
-        BallLaunch.Instant.StartBallAction += StartBall;
+        BallLaunch.Instant.StartedBallAction += StartBall;
         BallLaunch.Instant.SettupBall(transform);
     }
-
+    private void ContactWithEnviroment(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Brick"))
+        {
+            if (!m_isTouch)
+            {
+                m_direction = m_reflect.GetDirectionFromBrick(collision, m_direction);
+                TakeSpeedAfterContact();
+            }
+            m_isTouch = true;
+            collision.gameObject.GetComponent<IHitBrick>().MinusLive( m_powerHit);
+        }
+        else if (collision.gameObject.CompareTag("Paddle"))
+        {
+            m_direction = m_reflect.GetDirectionFromPaddle(collision, m_transform);
+            m_velocity = m_direction * (m_velocity.magnitude * m_multipleSpeed);
+            m_velocity = m_limitSpeed.LimitVelocity(m_velocity, m_maxSpeed);
+        }
+        else
+        {
+            m_direction = m_reflect.GetDirectionReflect(m_direction, collision.GetContact(0).normal);
+            TakeSpeedAfterContact();
+        }
+    }
+    private void TakeSpeedAfterContact()
+    {
+         m_velocity = m_direction * m_velocity.magnitude;
+    }
     private void TakeSlowPowerUp(float parametr, float delay)
     {
-        StartCoroutine(SlowUp(parametr, delay));
+        if (m_slowCoroutine != null)
+        {
+            StopCoroutine(m_slowCoroutine);
+        }
+        m_slowCoroutine = StartCoroutine(SlowUp(parametr, delay));
     }
 
     private IEnumerator SlowUp(float parametr, float delay)
@@ -112,5 +134,7 @@ public class BallMovement : MonoBehaviour
         m_velocity = m_direction * (tempSpeed * parametr);
         yield return new WaitForSeconds(delay);
         m_velocity = m_direction * tempSpeed;
+        m_slowCoroutine = null;
     }
+
 }

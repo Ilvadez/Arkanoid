@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public interface IBrick
+public interface IInitializeBrick
 {
-    public void Init(BrickCounter counter);
+    public void Initialization(BrickCounter counter);
 }

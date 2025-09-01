@@ -168,5 +168,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_speed: 1.2
   m_takeSlowPowerUp: {fileID: 11400000, guid: 65000b80a4b224f4d978ae47262b10ab, type: 2}
-  m_multipliSpeed: 0.5
-  m_delay: 10
+  m_multipliSpeed: 0.6
+  m_effectContinueTime: 10

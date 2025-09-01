@@ -1,7 +1,4 @@
-
-using System.Collections;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 public class BallMovement : MonoBehaviour
 {
@@ -9,22 +6,27 @@ public class BallMovement : MonoBehaviour
     private EventWithoutParametr m_wentFromScene;
     [SerializeField]
     private EventWithoutParametr m_endedBricksOnLevel;
-    [SerializeField]
+    [SerializeField,
+    Tooltip("Event for activite a slow action")]
     private EventForSpeedWithTime m_tookSlowPowerUp;
     private ReflectBall m_reflect;
     private LimitSpeed m_limitSpeed;
     private Rigidbody2D m_rigidBody;
     private Transform m_transform;
-    private Coroutine m_slowCoroutine;
+    private BallPowerUp m_ballPowerUp;
     private const int m_powerHit = 1;
     private const float m_restartPosition = -10f;
-    [SerializeField]
+    public Vector2 Velocity { get; private set; }
+    [SerializeField,
+    Tooltip("Speed when you launch the ball")]
     private float m_startSpeed;
-    [SerializeField]
+    [SerializeField,
+    Tooltip("Max speed for ball")]
     private float m_maxSpeed;
-    [SerializeField]
+    [SerializeField,
+    Range(1, 2),
+    Tooltip("Multiplication factor when touching to paddle")]
     private float m_multipleSpeed;
-    private Vector2 m_velocity;
     private Vector2 m_direction;
     private bool m_isTouch = false;
     void Awake()
@@ -33,6 +35,7 @@ public class BallMovement : MonoBehaviour
         m_transform = GetComponent<Transform>();
         m_reflect = new ReflectBall();
         m_limitSpeed = new LimitSpeed();
+        m_ballPowerUp = new BallPowerUp(this);
     }
     void OnEnable()
     {
@@ -46,7 +49,7 @@ public class BallMovement : MonoBehaviour
     }
     void FixedUpdate()
     {
-        MovePosition(m_velocity);
+        MovePosition(Velocity);
     }
     void OnDisable()
     {
@@ -55,7 +58,7 @@ public class BallMovement : MonoBehaviour
     }
     private void MovePosition(Vector2 velocity)
     {
-        m_rigidBody.MovePosition(new Vector2(m_transform.position.x, m_transform.position.y) + velocity * Time.fixedDeltaTime);
+        m_rigidBody.MovePosition(m_rigidBody.position + velocity * Time.fixedDeltaTime);
     }
 
     void OnCollisionEnter2D(Collision2D collision)
@@ -82,11 +85,10 @@ public class BallMovement : MonoBehaviour
         BallLaunch.Instant.StartedBallAction -= StartBall;
         m_rigidBody.simulated = true;
         m_direction = direction.normalized;
-        m_velocity = m_direction * m_startSpeed;
+        SetSpeed(m_startSpeed);
     }
     private void SettupBall()
     {
-        m_velocity = Vector2.zero;
         m_rigidBody.simulated = false;
         BallLaunch.Instant.StartedBallAction += StartBall;
         BallLaunch.Instant.SettupBall(transform);
@@ -98,43 +100,29 @@ public class BallMovement : MonoBehaviour
             if (!m_isTouch)
             {
                 m_direction = m_reflect.GetDirectionFromBrick(collision, m_direction);
-                TakeSpeedAfterContact();
+                SetSpeed(Velocity.magnitude);
             }
             m_isTouch = true;
-            collision.gameObject.GetComponent<IHitBrick>().MinusLive( m_powerHit);
+            collision.gameObject.GetComponent<IHitBrick>().MinusLive(m_powerHit);
         }
         else if (collision.gameObject.CompareTag("Paddle"))
         {
             m_direction = m_reflect.GetDirectionFromPaddle(collision, m_transform);
-            m_velocity = m_direction * (m_velocity.magnitude * m_multipleSpeed);
-            m_velocity = m_limitSpeed.LimitVelocity(m_velocity, m_maxSpeed);
+            SetSpeed(Velocity.magnitude * m_multipleSpeed);
+            Velocity = m_limitSpeed.LimitVelocity(Velocity, m_maxSpeed);
         }
         else
         {
             m_direction = m_reflect.GetDirectionReflect(m_direction, collision.GetContact(0).normal);
-            TakeSpeedAfterContact();
+            SetSpeed(Velocity.magnitude);
         }
     }
-    private void TakeSpeedAfterContact()
+    public void SetSpeed(float speed)
     {
-         m_velocity = m_direction * m_velocity.magnitude;
+        Velocity = m_direction * speed;
     }
     private void TakeSlowPowerUp(float parametr, float delay)
     {
-        if (m_slowCoroutine != null)
-        {
-            StopCoroutine(m_slowCoroutine);
-        }
-        m_slowCoroutine = StartCoroutine(SlowUp(parametr, delay));
+        m_ballPowerUp.ApplySlowPowerUp(parametr,delay);
     }
-
-    private IEnumerator SlowUp(float parametr, float delay)
-    {
-        float tempSpeed = m_velocity.magnitude;
-        m_velocity = m_direction * (tempSpeed * parametr);
-        yield return new WaitForSeconds(delay);
-        m_velocity = m_direction * tempSpeed;
-        m_slowCoroutine = null;
-    }
-
 }

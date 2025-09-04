@@ -15,7 +15,7 @@ public class BallMovement : MonoBehaviour
     private Transform m_transform;
     private BallPowerUp m_ballPowerUp;
     private const int m_powerHit = 1;
-    private const float m_restartPosition = -10f;
+    private const float m_restartPosition = -5.5f;
     public Vector2 Velocity { get; private set; }
     [SerializeField,
     Tooltip("Speed when you launch the ball")]

@@ -5,6 +5,7 @@ public class BallPowerUp
 {
     private BallMovement m_movement;
     private Coroutine m_coroutine;
+    private Vector2 m_currentVelocity;
 
     public BallPowerUp(BallMovement movement)
     {
@@ -17,11 +18,15 @@ public class BallPowerUp
         {
             m_movement.StopCoroutine(m_coroutine);
         }
+        else
+        {
+            m_currentVelocity = m_movement.Velocity;
+        }
         m_coroutine = m_movement.StartCoroutine(SlowUp(parametr, delay));
     }
     private IEnumerator SlowUp(float parametr, float delay)
     {
-        float tempSpeed = m_movement.Velocity.magnitude;
+        float tempSpeed = m_currentVelocity.magnitude;
         m_movement.SetSpeed(tempSpeed * parametr);
         yield return new WaitForSeconds(delay);
         m_movement.SetSpeed(tempSpeed);

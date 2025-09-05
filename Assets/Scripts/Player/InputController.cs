@@ -14,7 +14,7 @@ public class InputController : MonoBehaviour
     {
         m_action = new InputSystem_Actions();
     }
-    void OnEnable()
+    public void OnEnable()
     {
         m_action.Player.Enable();
         m_action.Player.Move.performed += ctx => Move = ctx.ReadValue<Vector2>();
@@ -26,7 +26,7 @@ public class InputController : MonoBehaviour
         m_endLives.Event += OnDisable;
 
     }
-    void OnDisable()
+    public void OnDisable()
     {
         m_action.Player.Jump.performed -= HandleJump;
         m_action.Player.Attack.performed -= HandleJump;

@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class BrickCounter : MonoBehaviour
 {
-    public event Action EndedBricks;
     [SerializeField]
     private TextMeshProUGUI m_textCount;
     public int Count { get; private set; }
+    public event Action EndedBricks;
 
     public void InitCountBricks(TextMeshProUGUI text)
     {
@@ -17,7 +17,7 @@ public class BrickCounter : MonoBehaviour
         foreach (IInitializeBrick i in transform.GetComponentsInChildren<IInitializeBrick>())
         {
             i.Initialization(this);
-        } 
+        }
     }
     public void UpdateCount()
     {

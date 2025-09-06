@@ -4,12 +4,15 @@ using UnityEngine;
 
 public class SpawnerLevels : MonoBehaviour
 {
+    private const int m_startIndex = 0;
     [SerializeField]
     private EventWithoutParametr m_endedLives;
     [SerializeField]
-    private EventWithoutParametr m_endedBricks;
+    private EventWithoutParametr m_goneNextLevel;
     [SerializeField]
     private EventWithoutParametr m_endedLevels;
+    [SerializeField]
+    private EventWithoutParametr m_endedBricks;
     private BrickCounter m_counter;
     [SerializeField]
     private TextMeshProUGUI m_textCountBricks;
@@ -20,7 +23,6 @@ public class SpawnerLevels : MonoBehaviour
     private GameObject m_currentLevel;
     [SerializeField]
     private Fade m_fadeBetweenLevel;
-    private const int m_startIndex = 0;
     private int m_currentIndex;
     void Awake()
     {
@@ -41,7 +43,7 @@ public class SpawnerLevels : MonoBehaviour
     void NextLevel()
     {
         m_counter = null;
-        m_endedBricks.InvokeEvent();
+        m_goneNextLevel.InvokeEvent();
         if (m_currentIndex + 1 < m_listLevels.Count)
         {
             m_currentIndex++;
@@ -56,6 +58,7 @@ public class SpawnerLevels : MonoBehaviour
     public void MoveNextLevel()
     {
         m_fadeBetweenLevel.StartFade();
+        m_endedBricks.InvokeEvent();
         m_counter.EndedBricks -= MoveNextLevel;
     }
     private void SetCountBricks(int indexLevel)

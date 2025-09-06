@@ -3,15 +3,15 @@ using UnityEngine;
 
 public class BallLaunch : MonoBehaviour
 {
-    public event Action<Vector2> StartedBallAction;
     public static BallLaunch Instant { get; private set; }
-    [SerializeField]
-    private InputController m_input;
-    private Transform m_positionSpawnBall;
     private readonly Vector3 m_positionBall = new Vector3(0.15f, 0.25f);
     [SerializeField]
+    private InputController m_input;
+    [SerializeField]
     private Vector2 m_startVectorForBall;
+    private Transform m_positionSpawnBall;
     private bool m_isStarted = false;
+    public event Action<Vector2> StartedBallAction;
     void Awake()
     {
         if (Instant == null && Instant != this)
